@@ -3,7 +3,24 @@ const User = model.User;
 const Customer = model.Customer;
 
 class CustomerController {
-	async getCustomers(req, res) {}
+	async getCustomers(req, res) {
+		const customers = await User.findOne({
+			where: {
+				id: req.body.userId,
+			},
+
+			attributes: [],
+
+			include: {
+				model: Customer,
+				attributes: ["id", "name", "phone"],
+			},
+		});
+
+		res.json({
+			data: customers,
+		});
+	}
 
 	async createCustomer(req, res) {
 		const { name, phone } = req.body;
@@ -14,37 +31,47 @@ class CustomerController {
 				message: "Missing or invalid information",
 			});
 		} else {
-			const customer = await Customer.findOne({
-				where: {
-					phone: phone,
-				},
-			});
+			try {
+				const customer = await User.findOne({
+					where: {
+						id: req.body.userId,
+					},
 
-			if (customer) {
-				return res.status(409).json({
-					status: "Erorr",
-					message: "Customer already exists",
+					attributes: [],
+
+					include: {
+						model: Customer,
+						where: {
+							id: id,
+						},
+						attributes: ["name", "phone"],
+					},
 				});
-			} else {
-				const customerData = {
-					name: name,
-					phone: phone,
-				};
-				const user = await User.findByPk(req.body.userId);
 
-				try {
+				if (customer) {
+					return res.status(409).json({
+						status: "Erorr",
+						message: "Customer already exists",
+					});
+				} else {
+					const customerData = {
+						name: name,
+						phone: phone,
+					};
+					const user = await User.findByPk(req.body.userId);
+
 					const newCustomer = await user.createCustomer(customerData);
 					return res.status(201).json({
 						status: "Success",
 						message: "Customer created successfully",
 						data: newCustomer,
 					});
-				} catch (e) {
-					return res.status(500).json({
-						status: "Error",
-						message: "Server Internal",
-					});
 				}
+			} catch (e) {
+				return res.status(500).json({
+					status: "Error",
+					message: "Server Internal",
+				});
 			}
 		}
 	}
@@ -59,17 +86,47 @@ class CustomerController {
 				message: "Missing or invalid information",
 			});
 		} else {
-			const customer = await Customer.findByPk(id);
 			try {
-				await customer.update({
-					name: name,
-					phone: phone,
+				const customer = await User.findOne({
+					where: {
+						id: req.body.userId,
+					},
+
+					attributes: [],
+
+					include: {
+						model: Customer,
+						where: {
+							id: id,
+						},
+						attributes: ["name", "phone"],
+					},
 				});
-				return res.status(201).json({
-					status: "Success",
-					message: "Customer updated successfully",
-				});
+
+				if (!customer) {
+					return res.status(404).json({
+						status: "Error",
+						message: "Customer not found",
+					});
+				} else {
+					await Customer.update(
+						{
+							name: name,
+							phone: phone,
+						},
+						{
+							where: {
+								id: id,
+							},
+						}
+					);
+					return res.status(201).json({
+						status: "Success",
+						message: "Customer updated successfully",
+					});
+				}
 			} catch (e) {
+				console.log(e);
 				return res.status(500).json({
 					status: "Error",
 					message: "Server Internal",
@@ -78,7 +135,7 @@ class CustomerController {
 		}
 	}
 
-	async deleteCustomer(resq, res) {
+	async deleteCustomer(req, res) {
 		const { id } = req.params;
 
 		if (!id) {
@@ -88,7 +145,21 @@ class CustomerController {
 			});
 		} else {
 			try {
-				const customer = await Customer.findByPk(id);
+				const customer = await User.findOne({
+					where: {
+						id: req.body.userId,
+					},
+
+					attributes: [],
+
+					include: {
+						model: Customer,
+						where: {
+							id: id,
+						},
+						attributes: ["name", "phone"],
+					},
+				});
 
 				if (!customer) {
 					return res.status(404).json({
@@ -96,9 +167,11 @@ class CustomerController {
 						message: "Customer not found",
 					});
 				} else {
-					await customer.removeUser(await User.findAll());
+					const customerRemove = await Customer.findByPk(id);
 
-					await customer.destroy();
+					await customerRemove.removeUser(await User.findAll());
+
+					await customerRemove.destroy();
 
 					return res.status(200).json({
 						status: "Success",
@@ -106,6 +179,7 @@ class CustomerController {
 					});
 				}
 			} catch (e) {
+				console.log(e);
 				return res.status(500).json({
 					status: "Error",
 					message: "Server Internal",
@@ -124,9 +198,19 @@ class CustomerController {
 			});
 		} else {
 			try {
-				const customer = await Customer.findOne({
+				const customer = await User.findOne({
 					where: {
-						phone,
+						id: req.body.userId,
+					},
+
+					attributes: [],
+
+					include: {
+						model: Customer,
+						where: {
+							phone: phone,
+						},
+						attributes: ["name", "phone"],
 					},
 				});
 				if (!customer) {
