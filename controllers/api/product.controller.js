@@ -1,6 +1,8 @@
+const getStockId = require("../../utils/get_stock_id");
 const model = require("../../models/index");
 const Category = model.Category;
 const Product = model.Product;
+const Stock = model.Stock;
 
 class ProductController {
 	async getCategories(req, res) {
@@ -18,10 +20,37 @@ class ProductController {
 		}
 	}
 
-	async getProducts(req, res) {}
+	async getProducts(req, res) {
+		try {
+			const stockId = await getStockId(req.body.userId);
+			const products = await Stock.findOne({
+				where: {
+					id: stockId,
+				},
+
+				attributes: [],
+
+				include: {
+					model: Product,
+					attributes: ["id", "name", "price"],
+				},
+			});
+
+			return res.status(200).json({
+				status: "Success",
+				data: products,
+			});
+		} catch (e) {
+			return res.status(500).json({
+				status: "Error",
+				message: "Server Internal",
+			});
+		}
+	}
 
 	async createProduct(req, res) {
-		const { name, price, categoryId } = req.body;
+		const { name, price, categoryId, quantity } = req.body;
+		const stockId = await getStockId(req.body.userId);
 
 		if ((!name, !price, !categoryId)) {
 			return res.status(400).json({
@@ -30,9 +59,18 @@ class ProductController {
 			});
 		} else {
 			try {
-				const product = await Product.findOne({
+				const product = await Stock.findOne({
 					where: {
-						name: name,
+						id: stockId,
+					},
+
+					attributes: [],
+
+					include: {
+						model: Product,
+						where: {
+							name: name,
+						},
 					},
 				});
 
@@ -54,10 +92,13 @@ class ProductController {
 							message: "Category Invalid",
 						});
 					} else {
-						await category.createProduct({
+						const stock = await Stock.findByPk(stockId);
+
+						await stock.createProduct({
 							name: name,
 							price: price,
-							quantity: 1,
+							category_id: categoryId,
+							quantity: quantity,
 						});
 
 						return res.status(200).json({
@@ -67,6 +108,7 @@ class ProductController {
 					}
 				}
 			} catch (e) {
+				console.log(e.message);
 				return res.status(500).json({
 					status: "Error",
 					message: "Server Internal",
@@ -75,8 +117,130 @@ class ProductController {
 		}
 	}
 
-	async storeProduct(req, res) {}
+	async storeProduct(req, res) {
+		const { id } = req.params;
+		const { name, price, categoryId, quantity } = req.body;
+		const stockId = await getStockId(req.body.userId);
 
-	async deleteProduct(req, res) {}
+		if ((!name, !price, !categoryId)) {
+			return res.status(400).json({
+				status: "Error",
+				message: "Missing or invalid information",
+			});
+		} else {
+			try {
+				const product = await Stock.findOne({
+					where: {
+						id: stockId,
+					},
+
+					attributes: [],
+
+					include: {
+						model: Product,
+						where: {
+							id: id,
+						},
+					},
+				});
+
+				if (!product) {
+					return res.status(404).json({
+						status: "Erorr",
+						message: "Product not found",
+					});
+				} else {
+					const category = await Category.findOne({
+						where: {
+							id: categoryId,
+						},
+					});
+
+					if (!category) {
+						return res.status(400).json({
+							status: "Error",
+							message: "Category Invalid",
+						});
+					} else {
+						await Product.update(
+							{
+								name: name,
+								price: price,
+								category_id: categoryId,
+								quantity: quantity,
+							},
+							{
+								where: {
+									id: id,
+								},
+							}
+						);
+
+						return res.status(200).json({
+							status: "Success",
+							message: "Product updated successfully",
+						});
+					}
+				}
+			} catch (e) {
+				console.log(e.message);
+				return res.status(500).json({
+					status: "Error",
+					message: "Server Internal",
+				});
+			}
+		}
+	}
+
+	async deleteProduct(req, res) {
+		const { id } = req.params;
+		const stockId = await getStockId(req.body.userId);
+		if (!id) {
+			return res.status(400).json({
+				status: "Error",
+				message: "Missing or invalid information",
+			});
+		} else {
+			try {
+				const product = await Stock.findOne({
+					where: {
+						id: stockId,
+					},
+
+					attributes: [],
+
+					include: {
+						model: Product,
+						where: {
+							id: id,
+						},
+					},
+				});
+
+				if (!product) {
+					return res.status(404).json({
+						status: "Error",
+						message: "Product not found",
+					});
+				} else {
+					const productRemove = await Product.findByPk(id);
+
+					await productRemove.removeStock(await Stock.findAll());
+
+					await productRemove.destroy();
+
+					return res.status(200).json({
+						status: "Success",
+						message: "Product deleted successfully",
+					});
+				}
+			} catch (e) {
+				return res.status(500).json({
+					status: "Error",
+					message: "Server Internal",
+				});
+			}
+		}
+	}
 }
 module.exports = new ProductController();

@@ -16,7 +16,7 @@ module.exports = {
 				type: Sequelize.INTEGER,
 				references: {
 					model: {
-						tableName: "stocks", //Tên bảng tham chiếu
+						tableName: "products", //Tên bảng tham chiếu
 					},
 					key: "id", //Khóa chính của bảng cần tham chiếu
 				},
@@ -26,7 +26,7 @@ module.exports = {
 				type: Sequelize.INTEGER,
 				references: {
 					model: {
-						tableName: "products", //Tên bảng tham chiếu
+						tableName: "stocks", //Tên bảng tham chiếu
 					},
 					key: "id", //Khóa chính của bảng cần tham chiếu
 				},

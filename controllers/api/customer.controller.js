@@ -4,22 +4,30 @@ const Customer = model.Customer;
 
 class CustomerController {
 	async getCustomers(req, res) {
-		const customers = await User.findOne({
-			where: {
-				id: req.body.userId,
-			},
+		try {
+			const customers = await User.findOne({
+				where: {
+					id: req.body.userId,
+				},
 
-			attributes: [],
+				attributes: [],
 
-			include: {
-				model: Customer,
-				attributes: ["id", "name", "phone"],
-			},
-		});
+				include: {
+					model: Customer,
+					attributes: ["id", "name", "phone"],
+				},
+			});
 
-		res.json({
-			data: customers,
-		});
+			res.status(200).json({
+				status: "Success",
+				data: customers,
+			});
+		} catch (e) {
+			return res.status(500).json({
+				status: "Error",
+				message: "Server Internal",
+			});
+		}
 	}
 
 	async createCustomer(req, res) {
@@ -156,7 +164,6 @@ class CustomerController {
 						where: {
 							id: id,
 						},
-						attributes: ["name", "phone"],
 					},
 				});
 
