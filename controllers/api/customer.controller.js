@@ -68,7 +68,6 @@ class CustomerController {
 					});
 				}
 			} catch (e) {
-				console.log(e);
 				return res.status(500).json({
 					status: "Error",
 					message: "Server Internal",
@@ -127,7 +126,6 @@ class CustomerController {
 					});
 				}
 			} catch (e) {
-				console.log(e);
 				return res.status(500).json({
 					status: "Error",
 					message: "Server Internal",
@@ -180,7 +178,6 @@ class CustomerController {
 					});
 				}
 			} catch (e) {
-				console.log(e);
 				return res.status(500).json({
 					status: "Error",
 					message: "Server Internal",

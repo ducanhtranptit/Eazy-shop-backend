@@ -37,7 +37,6 @@ class AuthMiddleware {
 				}
 			}
 		} catch (error) {
-			console.log(error);
 			res.status(403).json({
 				status: "Error",
 				message: "Authentication Failed",
