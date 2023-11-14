@@ -48,16 +48,16 @@ cd server
 npm install
 ```
 
+### Setup environment variables.
+
+Create a `.env` file and set environment variables based on `.env.example` file
+
 ### Setup database.
 
 ```bash
 npx sequelize-cli db:migrate
 npx sequelize-cli db:seed:all
 ```
-
-### Setup environment variables.
-
-Create a `.env` file and set environment variables based on `.env.example` file
 
 ### Run backend.
 
