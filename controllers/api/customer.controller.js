@@ -3,6 +3,29 @@ const User = model.User;
 const Customer = model.Customer;
 
 class CustomerController {
+	async getUserDetail(req, res) {
+		const id = req.body.userId;
+		try {
+			const userDetail = await User.findOne({
+				where: {
+					id: id,
+				},
+
+				attributes: ["name", "email"],
+			});
+			return res.status(200).json({
+				status: "Success",
+				data: userDetail,
+			});
+		} catch (e) {
+			console.log(e.message);
+			return res.status(401).json({
+				status: "Error",
+				error: "Authorization Failed",
+			});
+		}
+	}
+
 	async getCustomers(req, res) {
 		try {
 			const customers = await User.findOne({
@@ -219,7 +242,7 @@ class CustomerController {
 					},
 				});
 				if (!customer) {
-					return res.status(404).json({
+					return res.status(200).json({
 						status: "Not found",
 						message: "Customer not found",
 					});

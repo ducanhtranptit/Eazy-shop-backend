@@ -7,6 +7,5 @@ const LoginController = require("../controllers/auth/login.controller");
 router.post("/register", RegisterController.register);
 router.post("/login", LoginController.login);
 router.post("/logout", LoginController.logout);
-router.post("/get-token", LoginController.getRefreshToken);
-
+router.get("/get-token", LoginController.getRefreshToken);
 module.exports = router;

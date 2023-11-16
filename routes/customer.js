@@ -8,5 +8,6 @@ router.post("/", CustomerController.createCustomer);
 router.patch("/:id", CustomerController.storeCustomer);
 router.delete("/:id", CustomerController.deleteCustomer);
 router.get("/check-customer", CustomerController.checkAvalibleCustomer);
+router.get("/get-user-detail", CustomerController.getUserDetail);
 
 module.exports = router;
