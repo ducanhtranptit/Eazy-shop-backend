@@ -261,10 +261,6 @@ class CustomerController {
 			}
 		}
 	}
-
-	async getCustomerInvoice(req, res) {}
-
-	async getCustomerInvoiceDetail(req, res) {}
 }
 
 module.exports = new CustomerController();
