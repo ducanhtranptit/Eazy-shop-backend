@@ -78,7 +78,7 @@ class LoginController {
 					try {
 						await User.update({ refreshToken: null }, { where: { id: userId } });
 						await BlackList.create({
-							token: token,
+							accessToken: token,
 						});
 
 						res.status(200).json({

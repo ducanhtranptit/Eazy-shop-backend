@@ -17,6 +17,7 @@
     "jsonwebtoken": "^9.0.2",
     "morgan": "~1.9.1",
     "mysql2": "^3.6.3",
+    "node-cron": "^3.0.3",
     "sequelize": "^6.34.0",
     "validator": "^13.11.0"
   },

@@ -1,4 +1,5 @@
 require("dotenv").config();
+require("./schedules/clean_blacklist");
 
 const createError = require("http-errors");
 const express = require("express");

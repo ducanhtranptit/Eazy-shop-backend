@@ -1,0 +1,1 @@
+const BlackList = model.BlackList;
