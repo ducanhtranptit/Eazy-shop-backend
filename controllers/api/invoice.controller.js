@@ -20,7 +20,20 @@ class InvoiceController {
 			});
 		} else {
 			try {
-				const customer = await Customer.findByPk(customer_id);
+				const customer = await User.findOne({
+					where: {
+						id: req.body.userId,
+					},
+
+					attributes: [],
+
+					include: {
+						model: Customer,
+						where: {
+							id: customer_id,
+						},
+					},
+				});
 
 				if (!customer) {
 					return res.status(400).json({
@@ -129,7 +142,7 @@ class InvoiceController {
 		}
 	}
 	async deleteInvoice(req, res) {}
-	async getCustomerInvoice(req, res) {
+	async getCustomerInvoices(req, res) {
 		const { id } = req.params;
 		if (!id) {
 			return res.status(400).json({
@@ -138,6 +151,28 @@ class InvoiceController {
 			});
 		} else {
 			try {
+				const customer = await User.findOne({
+					where: {
+						id: req.body.userId,
+					},
+
+					attributes: [],
+
+					include: {
+						model: Customer,
+						where: {
+							id: id,
+						},
+					},
+				});
+
+				if (!customer) {
+					return res.status(400).json({
+						status: "Error",
+						message: "Customer is not avaliable",
+					});
+				}
+
 				const invoices = await Customer.findOne({
 					where: {
 						id: id,
@@ -154,13 +189,13 @@ class InvoiceController {
 				if (!invoices) {
 					return res.status(404).json({
 						status: "Error",
-						message: "Customer not found",
+						message: "Invoice is not avaliable",
 					});
 				}
 
 				return res.status(200).json({
 					status: "Success",
-					data: invoice,
+					data: invoices,
 				});
 			} catch (e) {
 				return res.status(500).json({
@@ -179,12 +214,25 @@ class InvoiceController {
 			});
 		} else {
 			try {
-				const invoice = await Invoice.findByPk(id);
+				const invoice = await Customer.findOne({
+					where: {
+						id: id,
+					},
+
+					attributes: [],
+
+					include: {
+						model: Invoice,
+						where: {
+							user_id: req.body.userId,
+						},
+					},
+				});
 
 				if (!invoice) {
 					return res.status(404).json({
 						status: "Error",
-						message: "Invoice not found",
+						message: "Invoice not avaliable",
 					});
 				}
 
