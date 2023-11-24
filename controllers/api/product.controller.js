@@ -48,6 +48,53 @@ class ProductController {
 		}
 	}
 
+	async getProductDetail(req, res) {
+		const { id } = req.params;
+		const stockId = await getStockId(req.body.userId);
+
+		if (!id) {
+			return res.status(400).json({
+				status: "Error",
+				message: "Missing or invalid information",
+			});
+		}
+
+		try {
+			const product = await Stock.findOne({
+				where: {
+					id: stockId,
+				},
+
+				attributes: [],
+
+				include: {
+					model: Product,
+					where: {
+						id: id,
+					},
+					attributes: ["name", "price", "quantity", "category_id"],
+				},
+			});
+
+			if (!product) {
+				return res.status(404).json({
+					status: "Erorr",
+					message: "Product not found",
+				});
+			}
+
+			return res.status(200).json({
+				status: "Success",
+				data: product,
+			});
+		} catch (e) {
+			return res.status(500).json({
+				status: "Error",
+				message: "Server Internal",
+			});
+		}
+	}
+
 	async createProduct(req, res) {
 		const { name, price, categoryId, quantity } = req.body;
 		const stockId = await getStockId(req.body.userId);
