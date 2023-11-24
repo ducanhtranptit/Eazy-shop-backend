@@ -1,6 +1,7 @@
 const model = require("../../models/index");
 const User = model.User;
 const Customer = model.Customer;
+const Invoice = model.Invoice;
 
 class CustomerController {
 	async getUserDetail(req, res) {
@@ -200,6 +201,8 @@ class CustomerController {
 
 					await customerRemove.removeUser(await User.findAll());
 
+					await customerRemove.removeInvoice(await Invoice.findAll());
+
 					await customerRemove.destroy();
 
 					return res.status(200).json({
@@ -208,6 +211,7 @@ class CustomerController {
 					});
 				}
 			} catch (e) {
+				console.log(e);
 				return res.status(500).json({
 					status: "Error",
 					message: "Server Internal",

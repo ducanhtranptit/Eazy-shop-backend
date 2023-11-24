@@ -20,7 +20,7 @@ module.exports = {
 				},
 			},
 			customer_id: {
-				allowNull: false,
+				allowNull: true,
 				type: Sequelize.INTEGER,
 				references: {
 					model: {
