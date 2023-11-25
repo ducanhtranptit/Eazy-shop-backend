@@ -155,7 +155,6 @@ class ProductController {
 					}
 				}
 			} catch (e) {
-				console.log(e.message);
 				return res.status(500).json({
 					status: "Error",
 					message: "Server Internal",
@@ -230,7 +229,6 @@ class ProductController {
 					}
 				}
 			} catch (e) {
-				console.log(e.message);
 				return res.status(500).json({
 					status: "Error",
 					message: "Server Internal",

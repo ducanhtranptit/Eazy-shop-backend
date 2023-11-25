@@ -125,7 +125,7 @@ class InvoiceController {
 					});
 				});
 
-				res.status(200).json({
+				return res.status(200).json({
 					status: "Success",
 					message: "Invoice created successfully",
 					data: {
@@ -141,7 +141,7 @@ class InvoiceController {
 			}
 		}
 	}
-	async deleteInvoice(req, res) {}
+
 	async getCustomerInvoices(req, res) {
 		const { id } = req.params;
 		if (!id) {
@@ -205,6 +205,7 @@ class InvoiceController {
 			}
 		}
 	}
+
 	async getCustomerInvoiceDetail(req, res) {
 		const { id } = req.params;
 		if (!id) {
@@ -214,20 +215,7 @@ class InvoiceController {
 			});
 		} else {
 			try {
-				const invoice = await Customer.findOne({
-					where: {
-						id: id,
-					},
-
-					attributes: [],
-
-					include: {
-						model: Invoice,
-						where: {
-							user_id: req.body.userId,
-						},
-					},
-				});
+				const invoice = await Invoice.findByPk(id);
 
 				if (!invoice) {
 					return res.status(404).json({
@@ -238,13 +226,13 @@ class InvoiceController {
 
 				const invoiceDetail = await Invoice_detail.findAll({
 					where: {
-						invoice_id: invoice.id,
+						invoice_id: id,
 					},
 
 					attributes: ["product_id", "quantity", "price"],
 				});
 
-				res.status(200).json({
+				return res.status(200).json({
 					status: "Success",
 					data: {
 						customer_id: invoice.customer_id,
